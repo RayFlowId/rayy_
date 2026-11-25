@@ -4,59 +4,125 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>rayy – Download Video & Foto TikTok</title>
-<meta name="description" content="Download video TikTok tanpa watermark, HD, foto slideshow, dan MP3. Gratis, tanpa login.">
+<meta name="description" content="Download video TikTok HD tanpa watermark, foto slideshow, dan MP3. Gratis, tanpa login, bisa di semua perangkat.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:title" content="rayy – Download Video & Foto TikTok">
+<meta property="og:description" content="Video HD tanpa watermark, foto slideshow, dan MP3. Gratis, tanpa login.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%232d2a6e'/%3E%3Ccircle cx='12' cy='12' r='5' fill='%23ebe9fb'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<canvas id="bg" aria-hidden="true"></canvas>
+<a class="skip" href="#main">Langsung ke isi halaman</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="5" width="13" height="14" rx="3"/><path d="M16 10l5-3v10l-5-3z"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="M4 18l5-5 4 4 3-3 4 4"/></symbol>
+    <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></symbol>
+    <symbol id="i-device" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="2.5"/><path d="M8 10.5V8a4 4 0 018 0v2.5"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  </defs>
+</svg>
+
+<div class="bgfx" aria-hidden="true">
+  <i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i>
+  <div class="grid"></div>
+  <canvas id="bg"></canvas>
+</div>
+
 <header class="top">
   <a class="brand" href="#"><span class="mark"></span>rayy</a>
-  <nav><a href="#fitur">Fitur</a><a href="#faq">FAQ</a></nav>
+  <nav aria-label="Menu utama"><a href="#cara">Cara pakai</a><a href="#fitur">Fitur</a><a href="#format">Format</a><a href="#faq">FAQ</a></nav>
 </header>
 
-<main>
+<main id="main">
   <section class="hero">
-    <h1>Download video TikTok tanpa watermark</h1>
-    <p class="lead">Tempel link, pilih kualitas, lalu simpan. Bisa video HD, foto, dan musik.</p>
+    <h1>Download video dan foto TikTok dengan kualitas terbaik</h1>
+    <p class="lead">Tempel link postingan, pilih hasil yang kamu mau, lalu simpan. Satu halaman, tanpa iklan yang mengganggu.</p>
 
     <form id="form" class="field" novalidate>
       <input id="url" type="url" inputmode="url" autocomplete="off" spellcheck="false"
-             placeholder="Tempel link TikTok di sini" aria-label="Link TikTok">
+             placeholder="Tempel link TikTok di sini" aria-label="Link TikTok" aria-describedby="error">
       <button type="button" id="paste" class="ghost" title="Tempel dari clipboard">Tempel</button>
       <button type="submit" id="go" class="solid">Download</button>
     </form>
     <p id="error" class="error" role="alert" hidden></p>
-    <p class="hint">Link dari tiktok.com, vt.tiktok.com, atau vm.tiktok.com</p>
+    <p class="hint">Mendukung link tiktok.com, vt.tiktok.com, dan vm.tiktok.com</p>
+    <ul class="pills">
+      <li><svg class="ic"><use href="#i-check"/></svg>Tanpa watermark</li>
+      <li><svg class="ic"><use href="#i-check"/></svg>Kualitas HD</li>
+      <li><svg class="ic"><use href="#i-check"/></svg>Tanpa login</li>
+    </ul>
   </section>
 
-  <section id="loading" class="loading" hidden><span class="spin"></span>Memproses link…</section>
-
+  <section id="loading" class="loading" role="status" hidden><span class="spin"></span>Memproses link, biasanya hanya beberapa detik…</section>
   <section id="result" class="result" hidden aria-live="polite"></section>
 
   <section id="historyBox" class="history" hidden>
-    <div class="row"><h2>Riwayat</h2><button id="clearHistory" class="link">Hapus</button></div>
+    <div class="row"><h2>Riwayat</h2><button id="clearHistory" class="link">Hapus riwayat</button></div>
     <ul id="history"></ul>
   </section>
 
-  <section id="fitur" class="features">
-    <article><h3>Video HD</h3><p>Tanpa watermark. Kalau ada versi HD, otomatis jadi pilihan utama.</p></article>
-    <article><h3>Foto slideshow</h3><p>Simpan foto satu per satu atau sekaligus semuanya.</p></article>
-    <article><h3>MP3</h3><p>Ambil suara dari video TikTok.</p></article>
-    <article><h3>Gratis</h3><p>Tanpa login, tanpa aplikasi tambahan.</p></article>
+  <section id="cara" class="block">
+    <div class="head"><h2>Cara pakai</h2><p>Tiga langkah, biasanya selesai kurang dari 10 detik.</p></div>
+    <ol class="steps">
+      <li><span class="n">1</span><h3>Salin link</h3><p>Buka postingan di TikTok, tekan Bagikan, lalu pilih Salin link.</p></li>
+      <li><span class="n">2</span><h3>Tempel di rayy</h3><p>Tempel di kolom paling atas, lalu tekan Download. Tombol Tempel mengambil langsung dari clipboard.</p></li>
+      <li><span class="n">3</span><h3>Pilih dan simpan</h3><p>Pilih video HD, SD, foto, atau MP3. File masuk ke folder Download di perangkatmu.</p></li>
+    </ol>
   </section>
 
-  <section id="faq" class="faq">
-    <h2>FAQ</h2>
-    <details><summary>Cara ambil link TikTok?</summary><p>Buka videonya di TikTok, tekan Bagikan, lalu Salin link. Tempel di kolom atas.</p></details>
-    <details><summary>Hasil download tersimpan di mana?</summary><p>Di folder Unduhan/Download di HP atau komputer. Di iPhone, cek lewat aplikasi File.</p></details>
-    <details><summary>Kenapa gagal?</summary><p>Biasanya karena akunnya privat, videonya sudah dihapus, atau link salah. Cek lagi lalu coba ulang.</p></details>
+  <section id="fitur" class="block">
+    <div class="head"><h2>Fitur</h2><p>Semua yang dibutuhkan untuk menyimpan konten TikTok, tanpa menu yang berbelit.</p></div>
+    <div class="cards">
+      <article><svg class="ic lg"><use href="#i-video"/></svg><h3>Video HD tanpa watermark</h3><p>Resolusi tertinggi yang disediakan TikTok dipilih otomatis. Versi SD juga ada kalau kuota terbatas.</p></article>
+      <article><svg class="ic lg"><use href="#i-image"/></svg><h3>Foto dan slideshow</h3><p>Postingan foto tampil sebagai galeri. Simpan satu per satu atau unduh semuanya sekaligus.</p></article>
+      <article><svg class="ic lg"><use href="#i-music"/></svg><h3>Audio MP3</h3><p>Ambil musik atau suara dari postingan dalam format MP3.</p></article>
+      <article><svg class="ic lg"><use href="#i-device"/></svg><h3>Semua perangkat</h3><p>Jalan di HP, tablet, dan komputer lewat peramban. Tidak perlu pasang aplikasi.</p></article>
+      <article><svg class="ic lg"><use href="#i-lock"/></svg><h3>Tanpa akun</h3><p>Tidak ada pendaftaran dan tidak ada data login yang diminta.</p></article>
+      <article><svg class="ic lg"><use href="#i-clock"/></svg><h3>Riwayat lokal</h3><p>Enam link terakhir tersimpan di peramban kamu sendiri, bukan di server, dan bisa dihapus kapan saja.</p></article>
+    </div>
+  </section>
+
+  <section id="format" class="block">
+    <div class="head"><h2>Pilihan unduhan</h2><p>Apa saja yang bisa kamu simpan dari satu link.</p></div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Jenis</th><th>Format</th><th>Keterangan</th></tr></thead>
+        <tbody>
+          <tr><td>Video HD</td><td>MP4</td><td>Tanpa watermark, kualitas tertinggi yang tersedia</td></tr>
+          <tr><td>Video SD</td><td>MP4</td><td>Tanpa watermark, ukuran file lebih kecil</td></tr>
+          <tr><td>Video watermark</td><td>MP4</td><td>Versi asli dari TikTok, lengkap dengan watermark</td></tr>
+          <tr><td>Foto</td><td>JPG</td><td>Untuk postingan foto atau slideshow</td></tr>
+          <tr><td>Musik</td><td>MP3</td><td>Audio dari postingan</td></tr>
+          <tr><td>Sampul</td><td>JPG</td><td>Gambar thumbnail video</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="faq" class="block faq">
+    <div class="head"><h2>Pertanyaan umum</h2></div>
+    <details><summary>Bagaimana cara mengambil link TikTok?</summary><p>Di aplikasi TikTok, buka postingan, tekan Bagikan, lalu Salin link. Link pendek seperti vt.tiktok.com juga bisa dipakai.</p></details>
+    <details><summary>File hasil download tersimpan di mana?</summary><p>Di folder Download pada HP atau komputer. Di iPhone, buka Safari, ketuk ikon Download, atau cari di aplikasi File.</p></details>
+    <details><summary>Kenapa video HD tidak muncul?</summary><p>Tidak semua video punya versi HD. Kalau tidak ada, rayy memberikan versi terbaik yang tersedia dari TikTok.</p></details>
+    <details><summary>Download gagal, apa penyebabnya?</summary><p>Biasanya akun pembuatnya privat, postingan sudah dihapus, atau linknya terpotong. Cek linknya, tunggu sebentar, lalu coba lagi.</p></details>
+    <details><summary>Apakah ada data yang disimpan?</summary><p>rayy tidak meminta akun. Riwayat link hanya tersimpan di peramban kamu dan bisa dihapus lewat tombol Hapus.</p></details>
+    <details><summary>Boleh dipakai ulang di akun lain?</summary><p>Semua konten milik pembuatnya. Pakai untuk koleksi pribadi, dan minta izin pembuat kalau ingin mengunggah ulang.</p></details>
   </section>
 </main>
 
-<footer>rayy bukan bagian dari TikTok. Semua konten milik pembuatnya.</footer>
+<footer>
+  <div class="fwrap">
+    <div><a class="brand" href="#"><span class="mark"></span>rayy</a><p>Download video, foto, dan musik TikTok dengan cepat dan rapi.</p></div>
+    <nav aria-label="Menu footer"><a href="#cara">Cara pakai</a><a href="#fitur">Fitur</a><a href="#format">Format</a><a href="#faq">FAQ</a></nav>
+  </div>
+  <p class="legal">rayy bukan bagian dari TikTok atau ByteDance. Semua konten milik pembuatnya masing-masing.</p>
+</footer>
 <div id="toast" class="toast" role="status"></div>
 <script src="script.js"></script>
 </body>

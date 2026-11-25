@@ -18,7 +18,7 @@
     const t = $('#toast'); t.textContent = msg; t.classList.add('show');
     clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
   }
-  function showError(msg) { errBox.textContent = msg; errBox.hidden = !msg; }
+  function showError(msg) { errBox.textContent = msg; errBox.hidden = !msg; input.setAttribute('aria-invalid', msg ? 'true' : 'false'); }
 
   // ---- Riwayat (tersimpan di peramban) ----
   const getHistory = () => { try { return JSON.parse(localStorage.getItem('rayy_history')) || []; } catch { return []; } };
@@ -49,10 +49,25 @@
   // ---- Unduh file ----
   async function download(url, name, btn) {
     const label = btn && btn.innerHTML;
-    if (btn) { btn.disabled = true; btn.querySelector('span').textContent = 'Mengunduh...'; }
+    let bar, sub;
+    if (btn) {
+      btn.disabled = true; btn.querySelector('span').textContent = 'Mengunduh…';
+      sub = btn.querySelector('small'); bar = document.createElement('i'); bar.className = 'bar'; btn.append(bar);
+    }
     try {
       const res = await fetch(url); if (!res.ok) throw new Error();
-      const blob = await res.blob();
+      const total = +res.headers.get('content-length') || 0;
+      let blob;
+      if (res.body && total) {
+        const reader = res.body.getReader(), chunks = []; let got = 0;
+        for (;;) {
+          const { done, value } = await reader.read(); if (done) break;
+          chunks.push(value); got += value.length;
+          const pct = Math.min(100, Math.round((got / total) * 100));
+          if (bar) bar.style.width = pct + '%'; if (sub) sub.textContent = pct + '%';
+        }
+        blob = new Blob(chunks, { type: res.headers.get('content-type') || '' });
+      } else blob = await res.blob();
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob); a.download = name;
       document.body.append(a); a.click(); a.remove();
@@ -60,7 +75,7 @@
       toast('Download dimulai');
     } catch {
       window.open(url, '_blank', 'noopener'); // cadangan jika diblokir CORS
-      toast('Dibuka di tab baru. Tekan lama lalu simpan.');
+      toast('Dibuka di tab baru. Tekan lama pada videonya, lalu pilih Simpan.');
     } finally { if (btn) { btn.disabled = false; btn.innerHTML = label; } }
   }
 
@@ -134,8 +149,8 @@
   form.addEventListener('submit', async (e) => {
     e.preventDefault(); showError(''); result.hidden = true;
     const url = input.value.trim();
-    if (!url) return showError('Tempel link TikTok dulu.');
-    if (!VALID.test(url)) return showError('Link tidak valid. Salin link lewat tombol Bagikan di TikTok.');
+    if (!url) return showError('Link belum diisi. Tempel link TikTok, lalu tekan Download.');
+    if (!VALID.test(url)) return showError('Ini bukan link TikTok. Salin lewat tombol Bagikan di TikTok, lalu tempel lagi.');
     go.disabled = true; loading.hidden = false;
     try {
       const res = await fetch(`${API}?url=${encodeURIComponent(url)}&hd=1`);
@@ -143,7 +158,7 @@
       if (json.code !== 0 || !json.data) throw new Error(json.msg || 'gagal');
       render(json.data); pushHistory(url, json.data.title);
     } catch (err) {
-      showError('Gagal mengambil video. Cek apakah akunnya tidak privat dan linknya masih aktif, lalu coba lagi.');
+      showError('Video tidak bisa diambil. Akunnya mungkin privat atau postingan sudah dihapus. Cek linknya, lalu coba lagi.');
     } finally { go.disabled = false; loading.hidden = true; }
   });
 
@@ -151,32 +166,56 @@
   renderHistory();
 })();
 
-// Background partikel bergerak (putih, partikel indigo lembut)
+// Latar: partikel jaringan + orb bokeh + cahaya kursor
 (() => {
   const c = document.getElementById('bg'); if (!c) return;
   const ctx = c.getContext('2d');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const COLORS = ['45,42,110', '124,111,224', '170,160,240'];
+  const ORB = ['124,111,224', '255,150,190', '90,200,170'];
   const LINK = 130, REACH = 170;
-  let w, h, ps = [], raf, mouse = { x: -999, y: -999 };
+  let w, h, ps = [], orbs = [], raf, mouse = { x: -999, y: -999, sx: 0, sy: 0 };
 
   function size() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     w = innerWidth; h = innerHeight;
     c.width = w * dpr; c.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const n = Math.round(Math.min(90, Math.max(28, (w * h) / 16000)));
+    const n = Math.round(Math.min(95, Math.max(30, (w * h) / 15000)));
     ps = Array.from({ length: n }, () => ({
       x: Math.random() * w, y: Math.random() * h,
       vx: (Math.random() - 0.5) * 0.35, vy: (Math.random() - 0.5) * 0.35,
       r: Math.random() * 1.8 + 0.8, a: Math.random() * 0.35 + 0.25,
       col: COLORS[Math.floor(Math.random() * COLORS.length)]
     }));
+    orbs = Array.from({ length: w < 700 ? 4 : 7 }, (_, i) => ({
+      x: Math.random() * w, y: Math.random() * h, r: 50 + Math.random() * 90,
+      vx: (Math.random() - 0.5) * 0.18, vy: (Math.random() - 0.5) * 0.18,
+      d: 0.01 + Math.random() * 0.03, col: ORB[i % ORB.length], a: 0.10 + Math.random() * 0.08
+    }));
     draw(true);
   }
 
   function draw(once) {
     ctx.clearRect(0, 0, w, h);
+    mouse.sx += (mouse.x - mouse.sx) * 0.08; mouse.sy += (mouse.y - mouse.sy) * 0.08;
+    const px = mouse.x < 0 ? 0 : mouse.sx - w / 2, py = mouse.y < 0 ? 0 : mouse.sy - h / 2;
+    for (const o of orbs) {
+      if (!reduce) {
+        o.x += o.vx; o.y += o.vy;
+        if (o.x < -o.r) o.x = w + o.r; else if (o.x > w + o.r) o.x = -o.r;
+        if (o.y < -o.r) o.y = h + o.r; else if (o.y > h + o.r) o.y = -o.r;
+      }
+      const x = o.x - px * o.d * 6, y = o.y - py * o.d * 6;
+      const g = ctx.createRadialGradient(x, y, 0, x, y, o.r);
+      g.addColorStop(0, `rgba(${o.col},${o.a})`); g.addColorStop(0.7, `rgba(${o.col},${o.a * 0.35})`); g.addColorStop(1, `rgba(${o.col},0)`);
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, o.r, 0, 6.2832); ctx.fill();
+    }
+    if (mouse.x > 0) {
+      const g = ctx.createRadialGradient(mouse.sx, mouse.sy, 0, mouse.sx, mouse.sy, 240);
+      g.addColorStop(0, 'rgba(124,111,224,.10)'); g.addColorStop(1, 'rgba(124,111,224,0)');
+      ctx.fillStyle = g; ctx.fillRect(mouse.sx - 240, mouse.sy - 240, 480, 480);
+    }
     for (let i = 0; i < ps.length; i++) {
       const p = ps[i];
       if (!reduce) {
@@ -191,13 +230,13 @@
       for (let j = i + 1; j < ps.length; j++) {
         const q = ps[j], d = Math.hypot(p.x - q.x, p.y - q.y);
         if (d < LINK) {
-          ctx.strokeStyle = `rgba(45,42,110,${(1 - d / LINK) * 0.14})`;
+          ctx.strokeStyle = `rgba(45,42,110,${(1 - d / LINK) * 0.15})`;
           ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
         }
       }
       const md = Math.hypot(p.x - mouse.x, p.y - mouse.y);
       if (md < REACH) {
-        ctx.strokeStyle = `rgba(124,111,224,${(1 - md / REACH) * 0.3})`;
+        ctx.strokeStyle = `rgba(124,111,224,${(1 - md / REACH) * 0.32})`;
         ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
       }
     }
@@ -207,7 +246,7 @@
   function start() { cancelAnimationFrame(raf); if (!reduce) raf = requestAnimationFrame(draw); }
   let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { size(); start(); }, 150); });
   addEventListener('pointermove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
-  addEventListener('pointerleave', () => { mouse.x = mouse.y = -999; });
+  document.addEventListener('pointerleave', () => { mouse.x = mouse.y = -999; });
   document.addEventListener('visibilitychange', () => (document.hidden ? cancelAnimationFrame(raf) : start()));
   size(); start();
 })();
