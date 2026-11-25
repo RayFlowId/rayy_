@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Rayy – Unduh Video & Foto TikTok HD</title>
-<meta name="description" content="Unduh video TikTok HD tanpa watermark, foto slideshow, dan musik. Tempel tautan, selesai.">
+<title>rayy – Download Video & Foto TikTok</title>
+<meta name="description" content="Download video TikTok tanpa watermark, HD, foto slideshow, dan MP3. Gratis, tanpa login.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,50 +13,49 @@
 <body>
 <header class="top">
   <a class="brand" href="#"><span class="mark"></span>rayy</a>
-  <nav><a href="#cara">Cara pakai</a><a href="#faq">Tanya jawab</a></nav>
+  <nav><a href="#fitur">Fitur</a><a href="#faq">FAQ</a></nav>
 </header>
 
 <main>
   <section class="hero">
-    <h1>Simpan momen TikTok dalam kualitas terbaik</h1>
-    <p class="lead">Tempel tautan video atau foto. Unduh HD tanpa watermark, tanpa daftar, gratis.</p>
+    <h1>Download video TikTok tanpa watermark</h1>
+    <p class="lead">Tempel link, pilih kualitas, lalu simpan. Bisa video HD, foto, dan musik.</p>
 
     <form id="form" class="field" novalidate>
       <input id="url" type="url" inputmode="url" autocomplete="off" spellcheck="false"
-             placeholder="Tempel tautan TikTok di sini" aria-label="Tautan TikTok">
+             placeholder="Tempel link TikTok di sini" aria-label="Link TikTok">
       <button type="button" id="paste" class="ghost" title="Tempel dari clipboard">Tempel</button>
-      <button type="submit" id="go" class="solid">Unduh</button>
+      <button type="submit" id="go" class="solid">Download</button>
     </form>
     <p id="error" class="error" role="alert" hidden></p>
-    <p class="hint">Mendukung tautan tiktok.com, vt.tiktok.com, dan vm.tiktok.com</p>
+    <p class="hint">Link dari tiktok.com, vt.tiktok.com, atau vm.tiktok.com</p>
   </section>
 
-  <section id="loading" class="loading" hidden><span class="spin"></span>Mengambil data dari TikTok…</section>
+  <section id="loading" class="loading" hidden><span class="spin"></span>Memproses link…</section>
 
   <section id="result" class="result" hidden aria-live="polite"></section>
 
   <section id="historyBox" class="history" hidden>
-    <div class="row"><h2>Riwayat terakhir</h2><button id="clearHistory" class="link">Hapus riwayat</button></div>
+    <div class="row"><h2>Riwayat</h2><button id="clearHistory" class="link">Hapus</button></div>
     <ul id="history"></ul>
   </section>
 
-  <section id="cara" class="features">
-    <article><h3>Video HD</h3><p>Pilih kualitas HD bila tersedia, tanpa watermark, atau versi asli dengan watermark.</p></article>
-    <article><h3>Foto dan slideshow</h3><p>Simpan satu per satu atau unduh semua foto dari postingan sekaligus.</p></article>
-    <article><h3>Musik MP3</h3><p>Ambil audio dari video untuk dipakai ulang di mana saja.</p></article>
-    <article><h3>Privat</h3><p>Tidak perlu akun. Riwayat hanya tersimpan di peramban Anda.</p></article>
+  <section id="fitur" class="features">
+    <article><h3>Video HD</h3><p>Tanpa watermark. Kalau ada versi HD, otomatis jadi pilihan utama.</p></article>
+    <article><h3>Foto slideshow</h3><p>Simpan foto satu per satu atau sekaligus semuanya.</p></article>
+    <article><h3>MP3</h3><p>Ambil suara dari video TikTok.</p></article>
+    <article><h3>Gratis</h3><p>Tanpa login, tanpa aplikasi tambahan.</p></article>
   </section>
 
   <section id="faq" class="faq">
-    <h2>Tanya jawab</h2>
-    <details><summary>Bagaimana cara mengambil tautan TikTok?</summary><p>Buka video atau foto di TikTok, ketuk Bagikan, lalu pilih Salin tautan. Tempel ke kolom di atas.</p></details>
-    <details><summary>Di mana file tersimpan?</summary><p>Di folder Unduhan peramban Anda. Di iPhone, buka Safari lalu ikon Unduhan; file ada di aplikasi File.</p></details>
-    <details><summary>Kenapa unduhan gagal?</summary><p>Pastikan akun pembuat tidak privat dan tautannya masih aktif. Coba lagi beberapa saat kemudian.</p></details>
-    <details><summary>Apakah boleh dipakai ulang?</summary><p>Video dan foto adalah hak cipta pembuatnya. Gunakan untuk keperluan pribadi dan hormati hak mereka.</p></details>
+    <h2>FAQ</h2>
+    <details><summary>Cara ambil link TikTok?</summary><p>Buka videonya di TikTok, tekan Bagikan, lalu Salin link. Tempel di kolom atas.</p></details>
+    <details><summary>Hasil download tersimpan di mana?</summary><p>Di folder Unduhan/Download di HP atau komputer. Di iPhone, cek lewat aplikasi File.</p></details>
+    <details><summary>Kenapa gagal?</summary><p>Biasanya karena akunnya privat, videonya sudah dihapus, atau link salah. Cek lagi lalu coba ulang.</p></details>
   </section>
 </main>
 
-<footer>rayy tidak berafiliasi dengan TikTok. Seluruh konten milik pembuatnya masing-masing.</footer>
+<footer>rayy bukan bagian dari TikTok. Semua konten milik pembuatnya.</footer>
 <div id="toast" class="toast" role="status"></div>
 <script src="script.js"></script>
 </body>

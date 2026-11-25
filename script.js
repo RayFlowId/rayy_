@@ -21,8 +21,8 @@
   function showError(msg) { errBox.textContent = msg; errBox.hidden = !msg; }
 
   // ---- Riwayat (tersimpan di peramban) ----
-  const getHistory = () => { try { return JSON.parse(localStorage.getItem('lumen_history')) || []; } catch { return []; } };
-  const setHistory = (h) => { try { localStorage.setItem('lumen_history', JSON.stringify(h)); } catch {} };
+  const getHistory = () => { try { return JSON.parse(localStorage.getItem('rayy_history')) || []; } catch { return []; } };
+  const setHistory = (h) => { try { localStorage.setItem('rayy_history', JSON.stringify(h)); } catch {} };
   function renderHistory() {
     const h = getHistory(); historyBox.hidden = !h.length; historyList.innerHTML = '';
     h.forEach((item) => {
@@ -43,13 +43,13 @@
   // ---- Tempel dari clipboard ----
   $('#paste').onclick = async () => {
     try { input.value = (await navigator.clipboard.readText()).trim(); input.focus(); if (VALID.test(input.value)) form.requestSubmit(); }
-    catch { toast('Izinkan akses clipboard atau tempel manual (Ctrl+V)'); input.focus(); }
+    catch { toast('Clipboard diblokir, tempel manual saja (Ctrl+V)'); input.focus(); }
   };
 
   // ---- Unduh file ----
   async function download(url, name, btn) {
     const label = btn && btn.innerHTML;
-    if (btn) { btn.disabled = true; btn.querySelector('span').textContent = 'Mengunduh…'; }
+    if (btn) { btn.disabled = true; btn.querySelector('span').textContent = 'Mengunduh...'; }
     try {
       const res = await fetch(url); if (!res.ok) throw new Error();
       const blob = await res.blob();
@@ -57,10 +57,10 @@
       a.href = URL.createObjectURL(blob); a.download = name;
       document.body.append(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-      toast('Unduhan dimulai');
+      toast('Download dimulai');
     } catch {
       window.open(url, '_blank', 'noopener'); // cadangan jika diblokir CORS
-      toast('Dibuka di tab baru. Tekan lama atau Simpan untuk mengunduh.');
+      toast('Dibuka di tab baru. Tekan lama lalu simpan.');
     } finally { if (btn) { btn.disabled = false; btn.innerHTML = label; } }
   }
 
@@ -104,7 +104,7 @@
         f.append(im, b); grid.append(f);
       });
       const all = document.createElement('button'); all.type = 'button'; all.className = 'dl primary';
-      all.innerHTML = `<span>Unduh semua foto</span><small>${images.length} foto</small>`;
+      all.innerHTML = `<span>Download semua foto</span><small>${images.length} foto</small>`;
       all.onclick = async () => {
         all.disabled = true;
         for (let i = 0; i < images.length; i++) { await download(abs(images[i]), `tiktok-${id}-${i + 1}.jpg`); await new Promise((r) => setTimeout(r, 450)); }
@@ -134,8 +134,8 @@
   form.addEventListener('submit', async (e) => {
     e.preventDefault(); showError(''); result.hidden = true;
     const url = input.value.trim();
-    if (!url) return showError('Tempel tautan TikTok terlebih dahulu.');
-    if (!VALID.test(url)) return showError('Tautan tidak dikenali. Gunakan tautan dari tombol Bagikan di TikTok.');
+    if (!url) return showError('Tempel link TikTok dulu.');
+    if (!VALID.test(url)) return showError('Link tidak valid. Salin link lewat tombol Bagikan di TikTok.');
     go.disabled = true; loading.hidden = false;
     try {
       const res = await fetch(`${API}?url=${encodeURIComponent(url)}&hd=1`);
@@ -143,7 +143,7 @@
       if (json.code !== 0 || !json.data) throw new Error(json.msg || 'gagal');
       render(json.data); pushHistory(url, json.data.title);
     } catch (err) {
-      showError('Konten tidak dapat diambil. Pastikan akun tidak privat dan tautannya aktif, lalu coba lagi.');
+      showError('Gagal mengambil video. Cek apakah akunnya tidak privat dan linknya masih aktif, lalu coba lagi.');
     } finally { go.disabled = false; loading.hidden = true; }
   });
 
