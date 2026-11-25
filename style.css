@@ -103,3 +103,7 @@ footer{text-align:center;color:#9a9ca8;font-size:.82rem;padding:40px 24px 50px;b
   .media{max-width:260px;margin:0 auto;width:100%}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+
+/* Background partikel */
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+.top,main,footer{position:relative;z-index:1}
